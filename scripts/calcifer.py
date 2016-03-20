@@ -14,7 +14,7 @@ from datastager import DataStager
 # gsutil config -e
 # mserviceaccount@mhelloworld-1228.iam.gserviceaccount.com
 
-HERE = os.path.dirname(__file__)
+HERE = os.path.dirname(os.path.abspath(__file__))
 DOCKERFILES = os.path.join(HERE, '..', 'dockerfiles')
 
 def mkdir_p(path):
@@ -46,6 +46,8 @@ class Analysis(object):
 
         self.filename = filename
 
+        self.container_name = 'imagent'
+
         self.data_repo = project.data_repo
 
     def setup_paths(self):
@@ -66,6 +68,22 @@ class Analysis(object):
 
             ds.stage_file(self.filename)
 
+    def start_container(self):
+
+        agent = os.path.join(HERE, '..', 'agent')
+
+        command = ['docker',
+                    'run',
+                    #'-it',
+                    '--rm',
+                    '-v',
+                    self.working + ':' + '/working',
+                    '-v',
+                    agent + ':' + '/agent',
+                    self.container_name,
+                    '/agent/imagent.py']
+
+        subprocess.call(command)
 
 def build_container(container_name, docker_file_path):
 
@@ -113,6 +131,11 @@ def main():
     an = Analysis(myproj, "C0000230.ISQ")
 
     an.stage_data()
+
+    an.start_container()
+
+    #print an.working
+
 
     #print db.list_images()
     #build_containers()
