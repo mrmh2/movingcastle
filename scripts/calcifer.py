@@ -74,7 +74,6 @@ class Analysis(object):
 
         command = ['docker',
                     'run',
-                    #'-it',
                     '--rm',
                     '-v',
                     self.working + ':' + '/working',
@@ -84,6 +83,24 @@ class Analysis(object):
                     '/agent/imagent.py']
 
         subprocess.call(command)
+
+    def debug_container(self):
+
+        agent = os.path.join(HERE, '..', 'agent')
+
+        command = ['docker',
+                    'run',
+                    '-it',
+                    '--rm',
+                    '-v',
+                    self.working + ':' + '/working',
+                    '-v',
+                    agent + ':' + '/agent',
+                    '--link',
+                    'some-redis:redis',
+                    self.container_name]
+
+        subprocess.call(command)      
 
 def build_container(container_name, docker_file_path):
 
@@ -128,11 +145,10 @@ def main():
 
 
     myproj = Project('project.yml')
+
     an = Analysis(myproj, "C0000230.ISQ")
-
     an.stage_data()
-
-    an.start_container()
+    an.debug_container()
 
     #print an.working
 

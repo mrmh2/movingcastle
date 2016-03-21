@@ -1,0 +1,12 @@
+"""Redis communicator"""
+
+import redis
+
+def main():
+    r = redis.StrictRedis(host='redis')
+
+   # r.set('nodename', 'rosina')
+    print r.get('nodename')
+
+if __name__ == "__main__":
+    main()
