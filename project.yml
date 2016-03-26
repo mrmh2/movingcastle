@@ -1,2 +1,7 @@
-name: CT data processing
-data_repo: /Users/hartleym/data_repo/ct_pod_analysis
+name: yeast_growth
+description: Analysis of yeast growth
+url: https://github.com/JIC-Image-Analysis/yeast_growth
+data_repo: gs://data-repo/yeast_growth
+containers:
+  - yeastprocessor
+  - datamangler

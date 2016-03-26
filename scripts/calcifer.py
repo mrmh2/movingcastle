@@ -1,7 +1,9 @@
 #!/usr/bin/env python
+"""MovingCastle deploy and setup agent."""
 
 import os
 import errno
+import argparse
 import subprocess
 
 import yaml
@@ -140,15 +142,17 @@ def create_data_volumes():
     create_data_volume('raw_data', '/raw_data')
 
 def main():
+    parser = argparse.ArgumentParser()
+    
 
-    db = DockerBroker()
+    # db = DockerBroker()
 
 
-    myproj = Project('project.yml')
+    # myproj = Project('project.yml')
 
-    an = Analysis(myproj, "C0000230.ISQ")
-    an.stage_data()
-    an.debug_container()
+    # an = Analysis(myproj, "C0000230.ISQ")
+    # an.stage_data()
+    # an.debug_container()
 
     #print an.working
 
