@@ -144,6 +144,7 @@ def create_data_volumes():
 def main():
     parser = argparse.ArgumentParser()
     
+    print "Burning"
 
     # db = DockerBroker()
 
