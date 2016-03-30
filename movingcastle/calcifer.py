@@ -2,7 +2,9 @@
 """MovingCastle deploy and setup agent."""
 
 import os
+import sys
 import errno
+import shutil
 import argparse
 import subprocess
 
@@ -141,10 +143,77 @@ def create_data_volumes():
     create_data_volume('working', '/working')
     create_data_volume('raw_data', '/raw_data')
 
+def deploy(args):
+
+    project_name = 'yeast_growth'
+    project_url = 'https://github.com/JIC-Image-Analysis/yeast_growth'
+
+    deploy_root = '/deploy'
+
+    project_root = os.path.join(deploy_root, project_name)
+
+    data_path = os.path.join(project_root, 'data')
+    code_path = os.path.join(project_root, 'code')
+    output_path = os.path.join(project_root, 'output')
+    working_path = os.path.join(project_root, 'working')
+
+    mkdir_p(data_path)
+    mkdir_p(output_path)
+    mkdir_p(working_path)
+
+    git_command = ('git', 'clone', project_url, code_path)
+
+    subprocess.call(git_command)
+
+    shutil.copy('/movingcastle/analyse.sh', project_root)
+
+def analyse(args):
+    print "Burning", args
+    project_root = sys.argv[2]
+
+    print project_root
+    code_path = os.path.join(project_root, 'code')
+    data_path = os.path.join(project_root, 'data')
+    output_path = os.path.join(project_root, 'output')
+    data_file = sys.argv[-1]
+    inner_data_path = '/' + data_file
+
+
+    command = ('docker',
+               'run',
+               '-v',
+               '{}:/code'.format(code_path),
+               '-v',
+               '{}:/data'.format(data_path),
+               '-v',
+               '{}:/output'.format(output_path),
+               'jicscicomp/jicbioimage',
+               'python',
+               '/code/scripts/yeast_growth.py',
+               inner_data_path)
+
+    subprocess.call(command)
+
+    print ' '.join(command)   
+
 def main():
-    parser = argparse.ArgumentParser()
-    
-    print "Burning"
+
+    parser = argparse.ArgumentParser(description=__doc__)
+ 
+    subparsers = parser.add_subparsers(help='sub-command help', 
+                                        dest='subparser_name')
+
+    parser_analyse = subparsers.add_parser('analyse', help='Run analysis')
+    parser_analyse.add_argument('pwd', help='Working directory')
+    parser_analyse.add_argument('data_file', help='Data filename')
+    parser_analyse.set_defaults(func=analyse)
+
+    parser_list = subparsers.add_parser('deploy', help='Initialise')
+    parser_list.set_defaults(func=deploy)
+
+    args = parser.parse_args()
+
+    args.func(args)
 
     # db = DockerBroker()
 
