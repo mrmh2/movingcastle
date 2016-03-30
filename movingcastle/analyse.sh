@@ -2,8 +2,10 @@
 
 ARGS=$@
 PWD=`pwd`
+CONTAINER=jicscicomp/movingcastle
 
 docker run --rm \
 -v `pwd`/../movingcastle/movingcastle:/movingcastle \
 -v /var/run/docker.sock:/var/run/docker.sock \
-movingcastle /movingcastle/calcifer.py analyse $PWD $@
+$CONTAINER \
+/movingcastle/calcifer.py analyse $PWD $@
